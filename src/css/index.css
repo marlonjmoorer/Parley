@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  
+}
+
+.root{
+  background-color: red;
+}
+video {
+  width: 90%    !important;
+  height: auto   !important;
+  margin: 7px;
+}
