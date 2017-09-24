@@ -17,82 +17,83 @@ class Room extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            socket: null,
+            socket: io.connect(`http://localhost:5500/`),
             events: [],
-            members: [],
+            peers: [],
             username: "",
-            isLeader:false
+            isLeader: false,
+            peerSteams: []
+
         }
-        
+
     }
+    componentWillMount() {}
 
     componentDidMount() {
 
         //this.toggleCamera(true)
         var {name} = this.props.match.params
         var socket = io.connect(`http://localhost:5500/`)
-        var peer = new Peer(socket.id, {
-            host: 'localhost',
-            port: 5500,
-            path: '/peer'
-        })
-        peer.on('call', (call) => {
-            alert("")
-        })
-        socket.emit("join", name,({isLeader,members})=>{
-            this.getStream(stream=>{
-                console.log('====================================');
-                console.log(isLeader);
-                console.log('====================================');
-                if(isLeader){
+
+        socket
+            .on("message", this.appendMessage)
+            .on("user_joined", this.appendMessage)
+            .on("user_left", this.appendMessage)
+            .on("peerListChanged", (peers) => {
+                this.setState({peers})
+            })
+            .emit("join", name, ({peers, id}) => {
+                this.getStream(stream => {
+                    var peer = new Peer(id, {
+                        host: 'localhost',
+                        port: 5500,
+                        path: '/peer'
+                    })
+                    console.log("Ready")
+                    var amLeader = peers[0] == id
+
                     peer.on('call', (call) => {
                         console.log("Call recieved")
+
                         call.answer(stream); // Answer the call with an A/V stream.
+
                         call.on('stream', (remoteStream) => {
+                            var {peerSteams} = this.state
                             this.setState({
-                                remoteUrl: URL.createObjectURL(remoteStream)
+                                peerSteams: [
+                                    ...peerSteams,
+                                    remoteStream
+                                ]
                             })
+                            // this.appendStream(remoteStream)
                         });
                     });
-                }else{
-                    var leader=members[0]
-                    var call=peer.call(leader, stream);
-                    console.log("calling :" , leader)
-                    console.log(call)
-                    call.on('stream', function(remoteStream) {
-                        alert("works")
-                    })
-                }
-                this.setState({members})
+                    if (!amLeader) {
+                        peers
+                            .filter(p => p != id)
+                            .forEach(p => {
+                                console.log("Calling  ", p)
+                                var call = peer.call(p, stream)
+
+                                call.on("stream", (remoteStream) => {
+                                    var {peerSteams} = this.state
+                                    this.setState({
+                                        peerSteams: [
+                                            ...peerSteams,
+                                            remoteStream
+                                        ]
+                                    })
+                                    //this.appendStream(remoteStream)
+                                })
+
+                            })
+                    }
+
+                    this.setState({peer, id, stream})
+                })
+
             })
-            
-        })
-        .on("message", this.appendMessage)
-        .on("user_joined", this.appendMessage)
-        .on("user_left", this.appendMessage)
-        .on("member_update", (members) => {
-            if(members.length>1){
-                var leader=members[0]
-                if(leader!=socket.id){
-                   
-                }
-            }else{
-                this.getStream(stream=>{})
-                peer.on('call', (call) => {
-                    console.log("Call recieved")
-                    var {stream} = this.state
-                    call.answer(stream); // Answer the call with an A/V stream.
-                    call.on('stream', (remoteStream) => {
-                        this.setState({
-                            remoteUrl: URL.createObjectURL(remoteStream)
-                        })
-                    });
-                });
-                
-            }
-            this.setState({members})
-        })
-        this.setState({username:socket.id,socket, peer})
+
     }
     sendMessage = (e) => {
         var {socket} = this.state
@@ -103,15 +104,13 @@ class Room extends Component {
         }
     }
     getStream(callback) {
-        if(this.state.stream){
+        if (this.state.stream) {
             callback(this.state.stream)
-        }else{
+        } else {
             navigator.getUserMedia({
-              //  audio: true,
+                //  audio: true,
                 video: true
-            }, (stream)=>{
-                this.setState({stream},()=>callback(this.state.stream))
-            }, (err) => {})
+            }, callback, (err) => {})
         }
     }
     toggleCamera(show) {
@@ -133,23 +132,29 @@ class Room extends Component {
                         track.stop();
                     });
                 console.log(stream.getTracks())
-                this.setState({
-                    stream:null
-                })
+                this.setState({stream: null})
             }
         }
 
     }
     appendMessage = (event) => {
         console.log(this.state)
-        var feed= document.querySelector("#eventBoard")
+        var feed = document.querySelector("#eventBoard")
         this.setState({
             events: [
                 ...this.state.events,
                 event
             ]
-        },()=>{
-            feed.scrollTop=feed.scrollHeight
+        }, () => {
+            feed.scrollTop = feed.scrollHeight
+        })
+    }
+    appendStream = (s) => {
+        console.log(s)
+        var {peerSteams} = this.state
+        console.log(peerSteams)
+        this.setState({
+            peerSteams: peerSteams.concat(s)
         })
     }
     callUser = (e) => {
@@ -172,50 +177,71 @@ class Room extends Component {
     }
 
     render() {
-        var {stream}=this.state
+        var {stream, peerSteams} = this.state
         return (
-            <div style={{minHeight:"300px"}} >
+            <div style={{
+                minHeight: "300px"
+            }}>
                 <h3>{this.state.username}</h3>
-                <Grid celled columns={3} style={{minHeight:"300px"}} >
+                <Grid
+                    celled
+                    columns={3}
+                    style={{
+                    minHeight: "300px"
+                }}>
                     <Grid.Row>
                         <Grid.Column color="red" width={3}>
                             <UserList
                                 users={this
                                 .state
-                                .members
+                                .peers
                                 .filter(u => u != this.state.username)}
                                 onClick={this.callUser}/>
                             <Divider/>
                             <Grid.Row>
-                                <Grid.Column>
-                                    <video src={stream?URL.createObjectURL(stream):""} autoPlay controls></video>
+                                <Grid.Column >
+                                    <video
+                                        src={stream
+                                        ? URL.createObjectURL(stream)
+                                        : ""}
+                                        autoPlay
+                                        controls></video>
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid.Column>
                         <Grid.Column color="green" width={8}>
 
-                            <Grid.Row>
+                            {/*  <Grid.Row>
                                 <Grid.Column width={4}>
                                     <button onClick={() => this.toggleCamera(true)}>On</button>
                                     <button onClick={() => this.toggleCamera(false)}>
                                         Off</button>
                                 </Grid.Column>
 
-                            </Grid.Row>
-                            <Grid.Row>
-                                <Grid.Column width={4}>
-                                    <video src={this.state.remoteUrl} autoPlay></video>
-                                </Grid.Column>
-                            </Grid.Row>
+                            </Grid.Row> */}
+                            <Grid>
+                                <Grid.Row columns={2}>
+                                    {peerSteams.map(ps => <Grid.Column >
+                                        <video width="200" height="200" src={URL.createObjectURL(ps)} autoPlay></video>
+                                    </Grid.Column>)}
+                                </Grid.Row>
+
+                            </Grid>
+
                         </Grid.Column>
                         <Grid.Column color="teal" width={5}>
-                            <div id="eventBoard" style={{overflowY: "scroll", height:"400px",background:"white" }} >
-                                <EventFeed events={this.state.events}/> 
+                            <div
+                                id="eventBoard"
+                                style={{
+                                overflowY: "scroll",
+                                height: "400px",
+                                background: "white"
+                            }}>
+                                <EventFeed events={this.state.events}/>
                             </div>
-                            
+
                             <Input fluid placeholder="message" onKeyPress={this.sendMessage}/>
-                            
-                            
+
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

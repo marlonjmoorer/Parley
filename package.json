@@ -5,6 +5,8 @@
   "dependencies": {
     "body-parser": "^1.18.1",
     "express": "^4.15.4",
+    "hashmap": "^2.3.0",
+    "monk": "^6.0.4",
     "peer": "^0.2.8",
     "peerjs": "^0.3.14",
     "react": "^15.6.1",
