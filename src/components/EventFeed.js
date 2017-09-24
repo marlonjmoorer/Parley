@@ -1,7 +1,6 @@
 import React from 'react';
 import {Feed, Icon} from 'semantic-ui-react'
 const EventFeed = ({events}) => {
-    console.log(events)
     return (
         <div>
 

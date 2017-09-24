@@ -7,12 +7,14 @@ import {
     List,
     Input,
     Divider,
-    TextArea
+    TextArea,
+    Container,
+    Button
 } from 'semantic-ui-react'
 import UserList from './UserList';
 import EventFeed from './EventFeed';
 import Peer from "peerjs"
-
+import VideoItem from './VideoItem';
 class Room extends Component {
     constructor(props) {
         super(props)
@@ -21,24 +23,23 @@ class Room extends Component {
             events: [],
             peers: [],
             username: "",
-            isLeader: false,
-            peerSteams: []
-
+            isLeader: false
         }
 
     }
-    componentWillMount() {}
+
 
     componentDidMount() {
 
         //this.toggleCamera(true)
         var {name} = this.props.match.params
         var socket = io.connect(`http://localhost:5500/`)
-
+        
         socket
             .on("message", this.appendMessage)
             .on("user_joined", this.appendMessage)
             .on("user_left", this.appendMessage)
+            .on("user_left", this.userLeft)
             .on("peerListChanged", (peers) => {
                 this.setState({peers})
             })
@@ -54,38 +55,31 @@ class Room extends Component {
 
                     peer.on('call', (call) => {
                         console.log("Call recieved")
-
+                        console.log(call)
                         call.answer(stream); // Answer the call with an A/V stream.
 
                         call.on('stream', (remoteStream) => {
-                            var {peerSteams} = this.state
-                            this.setState({
-                                peerSteams: [
-                                    ...peerSteams,
-                                    remoteStream
-                                ]
-                            })
-                            // this.appendStream(remoteStream)
+                            this.appendPeer({id: call.peer, stream: remoteStream})
+                        });
+                    });
+                    peer.on('connection', (conn)=> { 
+                        conn.on('data', (data)=> {
+                            console.log('Received', data);
+                            switch(data){
+                                case "mute":
+                                    this.mute()
+                            }
                         });
                     });
                     if (!amLeader) {
                         peers
                             .filter(p => p != id)
-                            .forEach(p => {
-                                console.log("Calling  ", p)
-                                var call = peer.call(p, stream)
-
+                            .forEach(pid => {
+                                console.log("Calling  ", pid)
+                                var call = peer.call(pid, stream)
                                 call.on("stream", (remoteStream) => {
-                                    var {peerSteams} = this.state
-                                    this.setState({
-                                        peerSteams: [
-                                            ...peerSteams,
-                                            remoteStream
-                                        ]
-                                    })
-                                    //this.appendStream(remoteStream)
+                                    this.appendPeer({id: pid, stream: remoteStream})
                                 })
-
                             })
                     }
 
@@ -103,40 +97,18 @@ class Room extends Component {
             e.target.value = ''
         }
     }
+
     getStream(callback) {
         if (this.state.stream) {
             callback(this.state.stream)
         } else {
             navigator.getUserMedia({
-                //  audio: true,
+                 audio: true,
                 video: true
             }, callback, (err) => {})
         }
     }
-    toggleCamera(show) {
-        if (show) {
-            this.getStream(stream => {
-                this.setState({
-                    url: URL.createObjectURL(stream),
-                    stream
-                })
-            })
-        } else {
-
-            var {stream} = this.state
-            if (stream) {
-
-                stream
-                    .getTracks()
-                    .forEach(function (track) {
-                        track.stop();
-                    });
-                console.log(stream.getTracks())
-                this.setState({stream: null})
-            }
-        }
-
-    }
+  
     appendMessage = (event) => {
         console.log(this.state)
         var feed = document.querySelector("#eventBoard")
@@ -149,40 +121,49 @@ class Room extends Component {
             feed.scrollTop = feed.scrollHeight
         })
     }
-    appendStream = (s) => {
-        console.log(s)
-        var {peerSteams} = this.state
-        console.log(peerSteams)
+
+    appendPeer = (peer) => {
+        var {peers} = this.state
         this.setState({
-            peerSteams: peerSteams.concat(s)
+            peers: [
+                ...peers,
+                peer
+            ]
         })
     }
-    callUser = (e) => {
-        var {peer, stream} = this.state
-        console.log(e.target.text)
-        console.log(peer)
-
-        var call = peer.call(e.target.text, stream);
-        console.log(call)
-        /* var conn = peer.connect(e.target.text);
-        conn.on('open', function() {
-            // Receive messages
-            conn.on('data', function(data) {
-              console.log('Received', data);
-            });
-
-            // Send messages
-            conn.send('Hello!');
-        })*/
+    userAdded(event) {}
+    userLeft = (event) => {
+        var {peers} = this.state
+        console.log('====================================');
+        console.log(event.user);
+        console.log('====================================');
+        this.setState({
+            peers: peers.filter(p => p.id != event.user)
+        })
     }
-
+    mute=()=>{
+        var {stream} = this.state
+        alert("muted")
+    }
+    mutePeer=(id)=>{
+        var {peer} = this.state
+        console.log("test")
+        var conn = peer.connect(id);
+        conn.on('open', function() {
+            console.log("open")
+            conn.send('mute');
+        });
+    }
     render() {
-        var {stream, peerSteams} = this.state
+        console.log('====================================');
+        console.log(this.state);
+        console.log('====================================');
+        var {stream, peers, id, peer} = this.state
         return (
             <div style={{
                 minHeight: "300px"
             }}>
-                <h3>{this.state.username}</h3>
+                <h3>{this.state.id}</h3>
                 <Grid
                     celled
                     columns={3}
@@ -190,39 +171,40 @@ class Room extends Component {
                     minHeight: "300px"
                 }}>
                     <Grid.Row>
-                        <Grid.Column color="red" width={3}>
-                            <UserList
+                        <Grid.Column color="blue" width={4}>
+                            {/*  <UserList
                                 users={this
                                 .state
                                 .peers
-                                .filter(u => u != this.state.username)}
-                                onClick={this.callUser}/>
+                                .filter(u => u != this.state.id)}
+                                /> */}
                             <Divider/>
-                            <Grid.Row>
-                                <Grid.Column >
-                                    <video
-                                        src={stream
-                                        ? URL.createObjectURL(stream)
-                                        : ""}
-                                        autoPlay
-                                        controls></video>
-                                </Grid.Column>
-                            </Grid.Row>
+                            <Grid>
+                                <Grid.Row>
+                                    <Grid.Column >
+                                        <Container>
+                                            <VideoItem
+                                                user={{
+                                                id,
+                                                stream
+                                            }}/>
+                                        </Container>
+                                    </Grid.Column>
+                                </Grid.Row>
+                            </Grid>
+
                         </Grid.Column>
-                        <Grid.Column color="green" width={8}>
+                        <Grid.Column color="green" width={7}>
 
-                            {/*  <Grid.Row>
-                                <Grid.Column width={4}>
-                                    <button onClick={() => this.toggleCamera(true)}>On</button>
-                                    <button onClick={() => this.toggleCamera(false)}>
-                                        Off</button>
-                                </Grid.Column>
-
-                            </Grid.Row> */}
+                            
                             <Grid>
                                 <Grid.Row columns={2}>
-                                    {peerSteams.map(ps => <Grid.Column >
-                                        <video width="200" height="200" src={URL.createObjectURL(ps)} autoPlay></video>
+                                    {peers.map((p, i) => 
+                                    <Grid.Column key={i}>
+                                        <VideoItem user={p}/>
+                                        <Button onClick={()=>{
+                                           this.mutePeer(p.id)
+                                        }} >Mute</Button>
                                     </Grid.Column>)}
                                 </Grid.Row>
 
