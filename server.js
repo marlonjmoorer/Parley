@@ -10,13 +10,18 @@ app.use(parser.json())
 
 var server=app.listen(5500,()=>{
     console.log("ready")
+    var o=require('os')
+   var name=server.address()
+   name;
 })
 var peerServer=ExpressPeerServer(server,{})
-require('./io')(server);
+var io=require('./io')(server);
 
 
 app.use("/peer",peerServer)
 
+
+ 
 
 peerServer.on("connection",(id)=>{
     console.log('====================================');

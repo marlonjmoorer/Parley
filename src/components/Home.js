@@ -26,7 +26,7 @@ class Home extends Component {
         }
     }
     render() {
-
+        
         if (this.state.redirect) {
             return this.state.redirect
         }

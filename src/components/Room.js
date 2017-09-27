@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import io from 'socket.io-client';
+import ChatWindow from './ChatWindow';
+
 import {
     Grid,
     Feed,
@@ -9,7 +11,12 @@ import {
     Divider,
     TextArea,
     Container,
-    Button
+    Button,
+    Sidebar,
+    Segment,
+    Menu,
+    Image,
+    Header
 } from 'semantic-ui-react'
 import UserList from './UserList';
 import EventFeed from './EventFeed';
@@ -23,18 +30,22 @@ class Room extends Component {
             events: [],
             peers: [],
             username: "",
-            isLeader: false
+            visible: true,
+            roomname: props.match.params.name
         }
 
     }
 
+    toggleVisibility = () => this.setState({
+        visible: !this.state.visible
+    })
 
     componentDidMount() {
 
         //this.toggleCamera(true)
         var {name} = this.props.match.params
         var socket = io.connect(`http://localhost:5500/`)
-        
+
         socket
             .on("message", this.appendMessage)
             .on("user_joined", this.appendMessage)
@@ -45,14 +56,16 @@ class Room extends Component {
             })
             .emit("join", name, ({peers, id}) => {
                 this.getStream(stream => {
-                    var peer = new Peer(id, {
+                    var peer = new Peer({
                         host: 'localhost',
                         port: 5500,
                         path: '/peer'
                     })
                     console.log("Ready")
                     var amLeader = peers[0] == id
-
+                    peer.on("open",(id)=>{
+                        console.log(id)
+                    })
                     peer.on('call', (call) => {
                         console.log("Call recieved")
                         console.log(call)
@@ -62,10 +75,10 @@ class Room extends Component {
                             this.appendPeer({id: call.peer, stream: remoteStream})
                         });
                     });
-                    peer.on('connection', (conn)=> { 
-                        conn.on('data', (data)=> {
+                    peer.on('connection', (conn) => {
+                        conn.on('data', (data) => {
                             console.log('Received', data);
-                            switch(data){
+                            switch (data) {
                                 case "mute":
                                     this.mute()
                             }
@@ -90,10 +103,14 @@ class Room extends Component {
 
     }
     sendMessage = (e) => {
-        var {socket} = this.state
+        var {socket, roomname} = this.state
         console.log(e.key)
+        console.log(e.target.value)
         if (e.target.value && e.key == "Enter") {
-            socket.emit("message", e.target.value)
+            socket.emit("message", {
+                room: roomname,
+                msg: e.target.value
+            })
             e.target.value = ''
         }
     }
@@ -103,22 +120,22 @@ class Room extends Component {
             callback(this.state.stream)
         } else {
             navigator.getUserMedia({
-                 audio: true,
+                //  audio: true,
                 video: true
             }, callback, (err) => {})
         }
     }
-  
+
     appendMessage = (event) => {
         console.log(this.state)
-        var feed = document.querySelector("#eventBoard")
+        var feed = document.querySelector("#feed")
         this.setState({
             events: [
                 ...this.state.events,
                 event
             ]
         }, () => {
-            feed.scrollTop = feed.scrollHeight
+            //  feed.scrollTop = feed.scrollHeight
         })
     }
 
@@ -141,15 +158,15 @@ class Room extends Component {
             peers: peers.filter(p => p.id != event.user)
         })
     }
-    mute=()=>{
+    mute = () => {
         var {stream} = this.state
         alert("muted")
     }
-    mutePeer=(id)=>{
+    mutePeer = (id) => {
         var {peer} = this.state
         console.log("test")
         var conn = peer.connect(id);
-        conn.on('open', function() {
+        conn.on('open', function () {
             console.log("open")
             conn.send('mute');
         });
@@ -158,74 +175,80 @@ class Room extends Component {
         console.log('====================================');
         console.log(this.state);
         console.log('====================================');
-        var {stream, peers, id, peer} = this.state
+        var {stream, peers, id, peer, events} = this.state
+
         return (
             <div style={{
-                minHeight: "300px"
+                height: "100%"
             }}>
-                <h3>{this.state.id}</h3>
                 <Grid
                     celled
-                    columns={3}
+                    columns={2}
+                    stretched
                     style={{
-                    minHeight: "300px"
+                    height: "100%"
                 }}>
-                    <Grid.Row>
-                        <Grid.Column color="blue" width={4}>
-                            {/*  <UserList
-                                users={this
-                                .state
-                                .peers
-                                .filter(u => u != this.state.id)}
-                                /> */}
-                            <Divider/>
-                            <Grid>
-                                <Grid.Row>
-                                    <Grid.Column >
-                                        <Container>
-                                            <VideoItem
-                                                user={{
-                                                id,
-                                                stream
-                                            }}/>
-                                        </Container>
-                                    </Grid.Column>
-                                </Grid.Row>
-                            </Grid>
+                    <Grid.Column width={13} style={{padding:"0"}}>
+                                <VideoItem user={this.state}/>
+                                <Menu color="black" inverted widths={3} >
+                                <Menu.Item name='gamepad' >
+                                    <Button.Group  size='large' widths={5}>
+                                        <Button color='violet'  icon='microphone'/>
+                                        <Button color='violet'  icon='video camera'/>
+                                        <Button color='violet'  icon='computer' />
+                                    </Button.Group>
+                                </Menu.Item>
+                              </Menu>
+                    </Grid.Column>
+                    <Grid.Column color="black" width={3}>
+                        {/*    <VideoItem user={this.state}/> */}
+                        {/* <ChatWindow events={events} sendMessage={this.sendMessage}/> */}
 
-                        </Grid.Column>
-                        <Grid.Column color="green" width={7}>
+                       {/*  <Grid container columns={1}>
 
-                            
-                            <Grid>
-                                <Grid.Row columns={2}>
-                                    {peers.map((p, i) => 
-                                    <Grid.Column key={i}>
-                                        <VideoItem user={p}/>
-                                        <Button onClick={()=>{
-                                           this.mutePeer(p.id)
-                                        }} >Mute</Button>
-                                    </Grid.Column>)}
-                                </Grid.Row>
-
-                            </Grid>
-
-                        </Grid.Column>
-                        <Grid.Column color="teal" width={5}>
-                            <div
-                                id="eventBoard"
-                                style={{
-                                overflowY: "scroll",
-                                height: "400px",
-                                background: "white"
-                            }}>
-                                <EventFeed events={this.state.events}/>
-                            </div>
-
-                            <Input fluid placeholder="message" onKeyPress={this.sendMessage}/>
-
-                        </Grid.Column>
-                    </Grid.Row>
+                        <Grid.Row >
+                                <Grid.Column color="">
+                                <Header as='h2' inverted color="Red" textAlign='center'>
+                                    Callers
+                                </Header>
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row >
+                                <Grid.Column>
+                                   
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row >
+                                <Grid.Column>
+                                <VideoItem user={this.state} /> 
+                                </Grid.Column>
+                            </Grid.Row>
+                            <Grid.Row >
+                                <Grid.Column>
+                                <VideoItem user={this.state} /> 
+                                </Grid.Column>
+                            </Grid.Row>
+                        </Grid> */}
+                        <Segment inverted color="violet" textAlign="center" >
+                                Header
+                         </Segment>
+                        <Segment.Group>
+                                    <Segment inverted color="violet">
+                                         <VideoItem user={this.state} /> 
+                                    </Segment>
+                                    <Segment>
+                                         <VideoItem user={this.state} /> 
+                                    </Segment>
+                                    
+                                    <Segment>
+                                         <VideoItem user={this.state} /> 
+                                    </Segment>
+                                    <Segment>
+                                         <VideoItem user={this.state} /> 
+                                    </Segment>
+                                   
+                        </Segment.Group>
+                    </Grid.Column>
                 </Grid>
             </div>
         );

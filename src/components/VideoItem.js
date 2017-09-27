@@ -1,7 +1,7 @@
 import React from 'react';
-import {Card, Icon, Image, Button} from 'semantic-ui-react'
+import {Card, Icon, Image, Button, Header, Segment} from 'semantic-ui-react'
 const VideoItem = ({user}) => {
-    
+
     var toggleCam = () => {
         console.log(user.stream.getTracks())
         user
@@ -19,26 +19,26 @@ const VideoItem = ({user}) => {
     }
     if (user.stream) {
         console.log(user.stream.getVideoTracks())
-        toggleMic()
+        // toggleMic()
+    }
+    var style={
+        height:"30%"
     }
 
     return (
-        <Card>
-            <video
-                src={user.stream
-                ? URL.createObjectURL(user.stream)
-                : ""}
-                autoPlay></video>
-            <Button.Group icon>
-                <Button color="teal" onClick={toggleMic}>
-                    <Icon name='microphone'/>
-                </Button>
-                <Button color="teal" onClick={toggleCam}>
-                    <Icon name='video camera'/>
-                </Button>
-            </Button.Group>
-
-        </Card>
+            <div className="video-wrapper"> 
+                 <div className="overlay">
+                 
+                </div>    
+                    <video 
+                    src={user.stream
+                    ? URL.createObjectURL(user.stream)
+                    : ""}
+                    autoPlay></video>
+            </div>
+               
+            
+          
     );
 }
 
