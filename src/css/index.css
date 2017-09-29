@@ -10,37 +10,16 @@ html,body{
 
 #root,#root > div{
  /*  background-color: red; */
-  height: 100%;
+   height: 100%; 
 }
 video {
   width: 100%    !important;
-  height: auto  !important;
+  height: 100%  !important;
  /*  margin: 7px; */
 } 
 
-.video-wrapper{
-  position: "fixed";
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  max-width: 100%;
-  
-}
-.video-wrapper .overlay{
-  position: absolute;
-  width: 100%;
-  height:100%;
-  /* //background:#000; 
-  opacity:0.75;*/
-  z-index:999;
-  top: 0;
-  left: 0;
-  display: flex;
-  
-  justify-content: center;
-  align-content: center;
- 
-}
+
+
 /* .video-wrapper  video {
   position: absolute;
   top: 0;

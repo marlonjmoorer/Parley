@@ -26,3 +26,50 @@
   to { transform: rotate(360deg); }
 }
 
+.room-layout{
+  height: 100%;
+  display: grid;
+  grid-template-columns: 4fr 1fr
+
+}
+.room-container{
+  display: grid;
+  grid-template-rows:  auto 12%
+}
+
+.side-bar{
+  height: 100%;
+  max-height: 100%;
+ display: grid;
+ grid-template-rows: 45% auto 49%;
+ 
+}
+.video-wrapper{
+  
+ padding: 20px 0;
+  display: grid;
+  grid-template-columns: 30fr 1fr
+
+}
+
+.userList{
+ 
+  padding: 5px 10px;
+  margin: 20px 10px;
+  overflow-y: "hidden";
+  overflow-x:  hidden;
+}
+.chat{
+  
+  display: grid;
+  grid-template-rows: 10%  auto 10%;
+  padding: 10px;
+  overflow-y: "scroll";
+}
+.messages{
+  overflow-y: "scroll";
+  overflow-x:  hidden;
+}
+
+
+

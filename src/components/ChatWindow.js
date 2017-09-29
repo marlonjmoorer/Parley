@@ -1,12 +1,14 @@
 import React from 'react';
-import { Input} from 'semantic-ui-react'
-import EventFeed from './EventFeed';
+import { Input,Header} from 'semantic-ui-react'
+import MessageFeed from './MessageFeed';
 
-const ChatWindow = ({sendMessage,events}) => {
+
+const ChatWindow = ({sendMessage,messages}) => {
 
     return ( 
-        <div style={{ height: "70%",margin:"10px",backgroundColor:"white",padding:"5px"}}>
-            <EventFeed events={events}/>
+        <div className="chat">
+            <Header color="blue" inverted >Conversation</Header>
+             <MessageFeed  messages={messages}/> 
             <Input fluid placeholder="message" onKeyPress={sendMessage}/>
         </div>
     );

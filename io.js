@@ -7,15 +7,18 @@ module.exports = (server) => {
     io.on("connection", (socket) => {
         console.log("connected")
         socket.on("message", ({msg,room}) => {
+            
+           
+            var user= map.get(room).find(u=>u.sid==socket.id);
             io
             .to(room)
             .emit("message", {
                 message: msg,
-                user: socket.id
+                id:user.id
             })
 
         })
-        socket.on("join", (roomname, done) => {
+        socket.on("join", (roomname,id) => {
 
             var room = []
             if (map.has(roomname)) {
@@ -23,36 +26,21 @@ module.exports = (server) => {
             }
 
             socket.join(roomname, (err) => {
-                room.push(socket.id)
+                var user={id,sid:socket.id}
                 socket
-                    .to(roomname)
-                    .emit("user_joined", {
-                        user: socket.id,
-                        message: `has joined the room`
-                    })
-                socket
-                    .to(roomname)
-                    .broadcast
-                    .emit("member_update", room)
-                done({peers: room, id: socket.id})
+                .to(roomname)
+                .emit("AddUser",user)
+                room.forEach(peer=>{
+                    socket.emit("AddUser",peer)
+                })
+                room.push(user)
                 map.set(roomname, room)
             })
         })
         socket.on("disconnect", () => {
             map.forEach((room, name) => {
-                if (room.includes(socket.id)) {
-                    io
-                        .to(name)
-                        .emit("user_left", {
-                            user: socket.id,
-                            message: `has left the room`
-                        })
-                    var updatedList = room.filter(id => id != socket.id)
-                    map.set(name, updatedList)
-                    io
-                        .to(name)
-                        .emit("member_update", updatedList)
-                }
+                map.set(name,room.filter(u=>u.sid!=socket.id))
+                io.to(name).emit("RemoveUser",{sid: socket.id})
             })
         })
     })

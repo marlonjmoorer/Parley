@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Icon, Image, Button, Header, Segment} from 'semantic-ui-react'
+
 const VideoItem = ({user}) => {
 
     var toggleCam = () => {
@@ -21,20 +21,17 @@ const VideoItem = ({user}) => {
         console.log(user.stream.getVideoTracks())
         // toggleMic()
     }
-    var style={
-        height:"30%"
-    }
+   
 
     return (
             <div className="video-wrapper"> 
-                 <div className="overlay">
-                 
-                </div>    
+                {/*  <div className="overlay"></div> */}
                     <video 
                     src={user.stream
                     ? URL.createObjectURL(user.stream)
                     : ""}
                     autoPlay></video>
+                    
             </div>
                
             

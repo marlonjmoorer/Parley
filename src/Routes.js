@@ -3,8 +3,10 @@ import {
     BrowserRouter as Router,
     Route
 } from 'react-router-dom'
-import Home from './components/Home';
+import Home from './pages/Home';
 import Room from './components/Room';
+import VideoChatPage from './pages/VideoChatPage';
+
 
 
 const Routes = () => {
@@ -12,7 +14,7 @@ const Routes = () => {
         <Router>
             <div>
                 <Route  exact path="/" component={Home}/>
-                <Route path="/room/:name" component={Room}/>
+                <Route path="/room/:name" component={VideoChatPage}/>
             </div>
         </Router>
     );

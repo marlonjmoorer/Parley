@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+/* import React, {Component} from 'react';
 import io from 'socket.io-client';
 import ChatWindow from './ChatWindow';
 
@@ -201,34 +201,7 @@ class Room extends Component {
                               </Menu>
                     </Grid.Column>
                     <Grid.Column color="black" width={3}>
-                        {/*    <VideoItem user={this.state}/> */}
-                        {/* <ChatWindow events={events} sendMessage={this.sendMessage}/> */}
-
-                       {/*  <Grid container columns={1}>
-
-                        <Grid.Row >
-                                <Grid.Column color="">
-                                <Header as='h2' inverted color="Red" textAlign='center'>
-                                    Callers
-                                </Header>
-                                </Grid.Column>
-                            </Grid.Row>
-                            <Grid.Row >
-                                <Grid.Column>
-                                   
-                                </Grid.Column>
-                            </Grid.Row>
-                            <Grid.Row >
-                                <Grid.Column>
-                                <VideoItem user={this.state} /> 
-                                </Grid.Column>
-                            </Grid.Row>
-                            <Grid.Row >
-                                <Grid.Column>
-                                <VideoItem user={this.state} /> 
-                                </Grid.Column>
-                            </Grid.Row>
-                        </Grid> */}
+                        
                         <Segment inverted color="violet" textAlign="center" >
                                 Header
                          </Segment>
@@ -256,3 +229,4 @@ class Room extends Component {
 }
 
 export default Room
+ */

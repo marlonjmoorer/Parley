@@ -13,14 +13,14 @@ import {
 class Home extends Component {
     state = {
         error: "",
-        redirect: ""
+        redirect: false
     }
     handleSubmit = (e) => {
         e.preventDefault();
        
         if (this.state.room) {
             console.log(this.props)
-            this.setState({ redirect: <Redirect to={`room/${this.state.room}`}/>})
+            this.setState({ redirect:true})
         } else {
             //this.setState({error: "Room is required"})
         }
@@ -28,7 +28,7 @@ class Home extends Component {
     render() {
         
         if (this.state.redirect) {
-            return this.state.redirect
+            return <Redirect to={`room/${this.state.room}`}/>
         }
         return (
             <div
