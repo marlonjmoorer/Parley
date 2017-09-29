@@ -5,7 +5,7 @@ const MessageFeed = ({messages}) => {
    
     return (
         <div id="feed" className="messages">
-       <Comment.Group >
+      {/*  <Comment.Group >
        {messages.map(event=>
         <Comment>
           
@@ -16,7 +16,8 @@ const MessageFeed = ({messages}) => {
           </Comment.Content>
         </Comment>
        )}
-      </Comment.Group> 
+      </Comment.Group>  */}
+      {messages.map(event=><div>event</div>)}
        </div>
     );
 }

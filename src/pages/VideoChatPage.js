@@ -6,7 +6,7 @@ import MediaControls from '../components/MediaControls';
 import UserList from '../components/UserList';
 import ChatWindow from '../components/ChatWindow';
 
-import { Divider} from 'semantic-ui-react'
+import { Divider, Tab} from 'semantic-ui-react'
 var dummyData = [
     {
         id: 1
@@ -76,6 +76,61 @@ var dummyMessages = [
         user: "glorp",
         text: "WORKS"
     },
+    {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    },
+    {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }
+    ,
+    {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }
+    ,
+    {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }, {
+        user: "glorp",
+        text: "WORKS"
+    }
+    ,
     {
         user: "glorp",
         text: "WORKS"
@@ -176,7 +231,21 @@ class VideoChatPage extends Component {
             //  feed.scrollTop = feed.scrollHeight
         })
     }
+    
     render() {
+        const panes  = [
+            { menuItem: 'Tab 1', render: () => 
+            <Tab.Pane>
+                 <UserList users={[].concat(dummyData)}/>
+            </Tab.Pane> 
+            },
+            { menuItem: 'Tab 2', render: () => 
+            <Tab.Pane>
+                 <ChatWindow messages={dummyMessages} sendMessage={this.sendMessage}/>
+            </Tab.Pane> 
+            },
+            
+          ]
         console.log(this.state)
         var {stream} = this.state
         return (
@@ -192,10 +261,12 @@ class VideoChatPage extends Component {
 
                 <div className="side-bar">
                    
-                    <UserList users={[].concat(dummyData)}/>
+{/* 
+                    <Tab panes={panes} className="tabs" /> */}
+                   <UserList users={[].concat(dummyData).concat(dummyData)}/>
                     <Divider/>
                    
-                    <ChatWindow messages={this.state.messages} sendMessage={this.sendMessage}/>
+                    <ChatWindow messages={this.state.messages.concat(dummyMessages).concat(dummyMessages)} sendMessage={this.sendMessage}/> 
                     
                 </div>
             </div>

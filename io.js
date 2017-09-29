@@ -8,15 +8,19 @@ module.exports = (server) => {
         console.log("connected")
         socket.on("message", ({msg,room}) => {
             
-           
-            var user= map.get(room).find(u=>u.sid==socket.id);
+           try{
+               var user= map.get(room).find(u=>u.sid==socket.id);
             io
             .to(room)
             .emit("message", {
                 message: msg,
                 id:user.id
             })
-
+ 
+           }catch(err){
+               console.error(err)
+           }
+           
         })
         socket.on("join", (roomname,id) => {
 
