@@ -1,7 +1,10 @@
 import React from 'react';
 
-const VideoItem = ({user}) => {
 
+
+const VideoGrid = ({user}) => {
+
+   var url=""
     var toggleCam = () => {
         console.log(user.stream.getTracks())
         user
@@ -19,19 +22,22 @@ const VideoItem = ({user}) => {
     }
     if (user.stream) {
         console.log(user.stream.getVideoTracks())
-        // toggleMic()
+        url=URL.createObjectURL(user.stream)
     }
    
 
     return (
             <div className="video-wrapper"> 
-                {/*  <div className="overlay"></div> */}
+                
+                 {[1,1].map(x=>
+
+                    <div className="video-container">
                     <video 
-                    src={user.stream
-                    ? URL.createObjectURL(user.stream)
-                    : ""}
+                    src={url}
                     autoPlay></video>
-                    
+                    </div>
+                 )}
+                 
             </div>
                
             
@@ -39,4 +45,4 @@ const VideoItem = ({user}) => {
     );
 }
 
-export default VideoItem;
+export default VideoGrid;

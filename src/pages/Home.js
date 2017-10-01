@@ -34,8 +34,7 @@ class Home extends Component {
             <div
                 style={{
                 margin: "160px auto",
-                textAlign: "center"
-                
+                textAlign: "center",
             }}>
                 <Container textAlign="center" >
 

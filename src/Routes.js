@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom'
 import Home from './pages/Home';
 import Room from './components/Room';
-import VideoChatPage from './pages/VideoChatPage';
+import VideoChat from './pages/VideoChat';
 
 
 
@@ -14,7 +14,7 @@ const Routes = () => {
         <Router>
             <div>
                 <Route  exact path="/" component={Home}/>
-                <Route path="/room/:name" component={VideoChatPage}/>
+                <Route path="/room/:name" component={VideoChat}/>
             </div>
         </Router>
     );

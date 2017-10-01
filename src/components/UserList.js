@@ -19,7 +19,7 @@ const UserList = ({users, onClick}) => {
                                 style={{
                                 color: "white"
                             }}>
-                               dasdbhkahjdahjkfhajkfhajk
+                               {user.username}
                             </List.Header>
                         </List.Content>
 

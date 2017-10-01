@@ -13,8 +13,9 @@ module.exports = (server) => {
             io
             .to(room)
             .emit("message", {
-                message: msg,
-                id:user.id
+                text: msg,
+                id:user.id,
+                date:new Date().toLocaleDateString()
             })
  
            }catch(err){

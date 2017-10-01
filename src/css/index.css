@@ -6,17 +6,16 @@ body {
 }
 html,body{
   height: 100%;
+
 }
 
+html{
+  padding: 0px;
+}
 #root,#root > div{
  /*  background-color: red; */
    height: 100%; 
 }
-video {
-  width: 100%    !important;
-  height: 100%  !important;
- /*  margin: 7px; */
-} 
 
 
 
