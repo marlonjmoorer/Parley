@@ -7,7 +7,7 @@ const UserStream = ({stream}) => {
         url=URL.createObjectURL(stream)
     }
     return (
-        <div style={{position:"relative"}}>
+        <div style={{display:"grid",alignItems:"end",justifyContent:"center"}}>
         <video  className="user-video"
         src={url}
         autoPlay></video>

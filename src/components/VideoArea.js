@@ -13,15 +13,20 @@ class VideoArea extends Component {
 
         console.log(nextProps)
         console.log(this.props)
-        
-        return  nextProps.user.id !=this.props.user.id
+        var update=false;
+        var func=p=>{if(p.stream) return p.stream}
+        var oldStreams= this.props.peers.map(func)
+        var newStreams= nextProps.peers.map(func)
+
+      //  return true
+        return  nextProps.peers.length!==this.props.peers.length ||nextProps.user.username !==this.props.user.username
     }
     
     render() {
        
         return (
             <div className="video-area">
-                <VideoGrid user={this.props.user}/>
+                <VideoGrid peers={this.props.peers}/>
                 <UserStream stream={this.props.user.stream}/>
             </div>
             

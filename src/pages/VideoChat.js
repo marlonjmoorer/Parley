@@ -9,6 +9,8 @@ import { Divider} from 'semantic-ui-react'
 
 import UserNameForm from '../components/UserNameForm';
 
+var UsernameGenerator = require('username-generator');
+
 
 class VideoChatPage extends Component {
     state = {
@@ -18,43 +20,73 @@ class VideoChatPage extends Component {
         socket: io.connect(`http://localhost:5500/`),
         messages:[],
         chatOpen:true,
-        username:null
+        username:UsernameGenerator.generateUsername()
     }
 
     init(){
-         var {socket} = this.state
-        var {name} = this.props.match.params
-        var peer = new Peer({host: 'localhost', port: 5500, path: '/peer'})
-        peer.on("open", (id) => {
-            
-                 this.getStream((stream) => {
-                this.setState({id, stream,roomname:name})
+        var {socket,username} = this.state
+        var {roomname} = this.props.match.params
+        var peer = new Peer(username,{host: 'localhost', port: 5500, path: '/peer'})
+        peer.on("open", () => {
+            this.getStream((stream) => {
+                var audio=stream.getAudioTracks()[0]||{}
+                var video= stream.getVideoTracks()[0]||{}
+               
+                this.setState({stream,roomname,video,audio})
             })
-            socket.emit("join", name, id)
-            
-           
+            socket.emit("join", {roomname,username})
         })
         socket.on("message", this.appendMessage)
         socket.on("AddUser", (user) => {
-            this.setState({
-                peers: [user].concat(this.state.peers)
-            })
+            var {stream,username}=this.state
+            console.log("Connecting",user.username)
+            var conn = peer.connect(user.username);
+            conn.on('open', ()=>{
+                conn.send({username});
+                this.setState({
+                    peers: [user].concat(this.state.peers)
+                })
+              /* console.log("Calling  ", user.username)
+              var call = peer.call(user.username, stream)
+              call.on("stream", (remoteStream) => {
+                  user.stream=remoteStream
+                  this.setState({
+                      peers: [user].concat(this.state.peers)
+                  })
+              }) */
+            });
         })
         socket.on("RemoveUser", (user) => {
-            var peers = this
+            if(user){
+                 var peers = this
                 .state
                 .peers
                 .filter(p => p.sid != user.sid)
-            console.log(peers)
             this.setState({peers})
+            }
+           
         })
         peer.on('call', (call) => {
             console.log("Call recieved")
             console.log(call)
             call.answer(this.state.stream); // Answer the call with an A/V stream.
-
             call.on('stream', (remoteStream) => {
-                this.updatePeer({id: call.peer, stream: remoteStream})
+               this.updatePeer({username: call.peer, stream: remoteStream})
+            });
+        });
+        peer.on('connection', (conn)=> {
+            console.log("Connection recieved")
+            conn.on('data', (data)=>{
+                var peername=data.username;
+                if(peername){
+                    var {stream}=this.state
+                    var call = peer.call(peername, stream)
+                    call.on("stream", (remoteStream) => {
+                        this.setState({
+                            peers: [{username:peername,stream:remoteStream}].concat(this.state.peers)
+                        })
+                    }) 
+                }
             });
         });
     }
@@ -64,10 +96,15 @@ class VideoChatPage extends Component {
            this.init()
        }
     }
+    
+
     updatePeer = (peer) => {
         var {peers} = this.state
-        var oldPeer = peers.find(p => p.id == peer.id)
+        var oldPeer = peers.find(p => p.username == peer.username)
         var index = peers.indexOf(oldPeer);
+        console.log(peer)
+        console.log(peers)
+        console.log(index)
         if (index !== -1) {
             peers[index].stream = peer.stream
             this.setState({peers})
@@ -78,25 +115,24 @@ class VideoChatPage extends Component {
             callback(this.state.stream)
         } else {
             navigator.getUserMedia({
-                //  audio: true,
+                audio: true,
                 video: true
             }, callback, (err) => {})
         }
     }
     sendMessage = (e) => {
-        var {socket, roomname} = this.state
-        console.log(e.key)
-        console.log(e.target.value)
+        var {socket, roomname,username} = this.state
         if (e.target.value && e.key == "Enter") {
             socket.emit("message", {
                 room: roomname,
-                msg: e.target.value
+                text: e.target.value,
+                username
             })
             e.target.value = ''
         }
     }
     appendMessage = (message) => {
-        console.log(this.state)
+        //message.username= this.state.peers.find(p=>p.id==message.id||p.id==this.state.id).username
         var feed = document.querySelector("#feed")
         this.setState({
             messages: [
@@ -114,14 +150,35 @@ class VideoChatPage extends Component {
         this.setState({username})
         this.init()
     }
+
+    toggleCam = () => {
+        var {video}=this.state
+        video.enabled=!video.enabled
+       // this.setState({video})
+    }
+    toggleMic= () => {
+        var {audio}=this.state
+       audio.enabled=!audio.enabled
+       this.setState({audio})
+    }
+
+
     render() {
        
-        console.log(this.state)
-        var {stream,id,username} = this.state
+       
+        var {stream,id,username,peers,video,audio} = this.state
         if(!username){
             return <UserNameForm OnJoin={this.join}/>
         }
-
+        var activePeers=peers.filter(p=>{
+            if(p.stream){
+                return true;
+            }
+        })
+        console.log('====================================');
+        console.log(this.state);
+        console.log(activePeers);
+        console.log('====================================');
         return (
             <div className="room-layout">
                 <div
@@ -130,14 +187,22 @@ class VideoChatPage extends Component {
                     background: "black"
                 }}>
 
-                    <VideoArea user={{id,stream,username}} />
-                    <MediaControls toggleChat={this.toggleChat} />
+                    <VideoArea user={{stream,username}} peers={activePeers} />
+                    {stream &&
+                    
+                    <MediaControls 
+                    toggleChat={this.toggleChat} 
+                    toggleCam={this.toggleCam} 
+                    toggleMic={this.toggleMic} 
+                    video={video}
+                    audio={audio} />
+                    }
                 </div>
 
                 <div className="side-bar" style={this.state.chatOpen?null:{width:0}}>
                    
 
-                   <UserList users={[].concat(this.state)}/>
+                   <UserList users={peers.concat(this.state)}/>
                     <Divider/>
                    
                     <ChatWindow messages={this.state.messages} sendMessage={this.sendMessage}/> 

@@ -14,7 +14,7 @@ const Routes = () => {
         <Router>
             <div>
                 <Route  exact path="/" component={Home}/>
-                <Route path="/room/:name" component={VideoChat}/>
+                <Route path="/room/:roomname" component={VideoChat}/>
             </div>
         </Router>
     );

@@ -16,7 +16,8 @@
     "semantic-ui-css": "^2.2.12",
     "semantic-ui-react": "^0.73.1",
     "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3"
+    "socket.io-client": "^2.0.3",
+    "username-generator": "^1.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -24,5 +25,5 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy":"http://localhost:5500"
+  "proxy": "http://localhost:5500"
 }

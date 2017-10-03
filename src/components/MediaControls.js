@@ -1,11 +1,17 @@
 import React from 'react';
 import {Button, Segment, Grid} from 'semantic-ui-react'
-const MediaControls = ({toggleChat}) => {
+const MediaControls = ({toggleChat, video,audio,toggleCam,toggleMic}) => {
+    
     return (
 
-      
+     <Segment vertical="middle" textAlign='center' inverted color="blue" >
+        <Button size="huge" circular icon={audio.enabled?'unmute':"mute"} onClick={toggleMic} />
+        <Button size="huge" circular icon='video camera' onClick={toggleCam} />
+        <Button size="huge" circular icon='settings'/>
+        <Button size="huge" circular icon='talk' onClick={toggleChat}/>
+     </Segment>
 
-            <Grid >
+          /*   <Grid >
                 <Grid.Row color="violet">
                      <Grid.Column  width={5}></Grid.Column>
                 <Grid.Column textAlign="center" verticalAlign="middle" width={6}>
@@ -19,7 +25,7 @@ const MediaControls = ({toggleChat}) => {
                 </Grid.Column>
                 </Grid.Row>
               
-            </Grid>
+            </Grid> */
 
        
     );
