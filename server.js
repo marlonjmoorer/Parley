@@ -17,9 +17,9 @@ var io=require('./io')(server);
 
 app.use("/peer",peerServer)
 
-if (process.env.NODE_ENV === 'production') {
+//if (process.env.NODE_ENV === 'production') {
     app.use(express.static('client/build'));
-}
+//}
 
 peerServer.on("connection",(id)=>{
     console.log('====================================');
