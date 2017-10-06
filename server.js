@@ -2,13 +2,13 @@ var express=require("express")
 var app =express();
 var parser= require("body-parser")
 var ExpressPeerServer = require('peer').ExpressPeerServer;
-
+var port=process.env.PORT||5500
 
 app.use(parser.urlencoded({extended:true}))
 app.use(parser.json())
 
 
-var server=app.listen(5500,()=>{
+var server=app.listen(port,()=>{
     console.log("ready")
 })
 var peerServer=ExpressPeerServer(server)
