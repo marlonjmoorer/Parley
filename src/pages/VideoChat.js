@@ -10,6 +10,7 @@ import { Divider} from 'semantic-ui-react'
 import UserNameForm from '../components/UserNameForm';
 
 var UsernameGenerator = require('username-generator');
+const { peerOptions } = require('../config');
 
 
 class VideoChatPage extends Component {
@@ -17,18 +18,21 @@ class VideoChatPage extends Component {
         id: null,
         peers: [],
         stream: null,
-        socket: io.connect(`http://localhost:5500/`),
+        socket: io.connect(`/`),
         messages:[],
         chatOpen:true,
         username:UsernameGenerator.generateUsername()
     }
 
     init(){
+        
+       // console.log(process)
         var {socket,username} = this.state
         var {roomname} = this.props.match.params
-        var peer = new Peer(username,{host: 'localhost', port: 5500, path: '/peer'})
+        var peer = new Peer(username,peerOptions)
         peer.on("open", () => {
             this.getStream((stream) => {
+                console.log(stream)
                 var audio=stream.getAudioTracks()[0]||{}
                 var video= stream.getVideoTracks()[0]||{}
                
@@ -46,14 +50,6 @@ class VideoChatPage extends Component {
                 this.setState({
                     peers: [user].concat(this.state.peers)
                 })
-              /* console.log("Calling  ", user.username)
-              var call = peer.call(user.username, stream)
-              call.on("stream", (remoteStream) => {
-                  user.stream=remoteStream
-                  this.setState({
-                      peers: [user].concat(this.state.peers)
-                  })
-              }) */
             });
         })
         socket.on("RemoveUser", (user) => {
@@ -147,21 +143,23 @@ class VideoChatPage extends Component {
       this.setState({chatOpen:!this.state.chatOpen})  
     }
     join=(username)=>{
-        this.setState({username})
-        this.init()
+        this.setState({username},this.init())
+        
     }
 
     toggleCam = () => {
         var {video}=this.state
         video.enabled=!video.enabled
-       // this.setState({video})
+        this.setState({video})
     }
     toggleMic= () => {
         var {audio}=this.state
        audio.enabled=!audio.enabled
        this.setState({audio})
     }
-
+    muteUSer=(id)=>{
+        alert(id)
+    }
 
     render() {
        
@@ -202,7 +200,7 @@ class VideoChatPage extends Component {
                 <div className="side-bar" style={this.state.chatOpen?null:{width:0}}>
                    
 
-                   <UserList users={peers.concat(this.state)}/>
+                   <UserList users={peers.concat(this.state)} onClick={this.muteUSer}/>
                     <Divider/>
                    
                     <ChatWindow messages={this.state.messages} sendMessage={this.sendMessage}/> 

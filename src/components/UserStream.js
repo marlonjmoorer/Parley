@@ -6,6 +6,7 @@ const UserStream = ({stream}) => {
        
         url=URL.createObjectURL(stream)
     }
+    console.log(url)
     return (
         <div style={{display:"grid",alignItems:"end",justifyContent:"center"}}>
         <video  className="user-video"

@@ -12,7 +12,7 @@ const UserList = ({users, onClick}) => {
                         <List.Content floated='right'>
                             <Icon size="large" name='microphone' color="red"/>
                         </List.Content>
-                        <Icon name="user circle" size="large"/>
+                        <Icon name="user circle" size="large"  />
                         <List.Content verticalAlign='middle'>
                             <List.Header
                                 as='a'

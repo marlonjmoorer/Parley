@@ -19,7 +19,7 @@ class VideoArea extends Component {
         var newStreams= nextProps.peers.map(func)
 
       //  return true
-        return  nextProps.peers.length!==this.props.peers.length ||nextProps.user.username !==this.props.user.username
+        return  nextProps.peers.length!==this.props.peers.length || nextProps.user.stream!==this.props.user.stream||nextProps.user.username !==this.props.user.username
     }
     
     render() {

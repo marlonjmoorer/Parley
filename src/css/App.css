@@ -66,12 +66,7 @@
  
   padding: 4px
 }
-.video-container{
-  padding: 10px;
-  box-sizing: border-box;
 
- 
-}
 
 
 
@@ -83,11 +78,8 @@ video {
 } 
 
 .user-video {
-  background: blue;
-  
   width: 150px;
   height: 150px;
-  
 }
 .userList{
   height: 100%;
