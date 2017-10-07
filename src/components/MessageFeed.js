@@ -8,7 +8,7 @@ const MessageFeed = ({messages}) => {
         <Comment.Group >
        {messages.map((message,i)=>
         <Comment key={i}>
-        <Comment.Avatar src="https://openclipart.org/image/2400px/svg_to_png/277084/Male-Avatar-3.png"/>
+        <Comment.Avatar src={require('../assets/Male-Avatar-3.png')}/>
           <Comment.Content>
             <Comment.Author as='a'>{message.username}</Comment.Author>
             <Comment.Metadata>

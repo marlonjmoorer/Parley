@@ -32,10 +32,9 @@ class VideoChatPage extends Component {
         var peer = new Peer(username,peerOptions)
         peer.on("open", () => {
             this.getStream((stream) => {
-                console.log(stream)
                 var audio=stream.getAudioTracks()[0]||{}
                 var video= stream.getVideoTracks()[0]||{}
-               
+               audio.enabled=false
                 this.setState({stream,roomname,video,audio})
             })
             socket.emit("join", {roomname,username})
@@ -64,12 +63,12 @@ class VideoChatPage extends Component {
         })
         peer.on('call', (call) => {
             console.log("Call recieved")
-            console.log(call)
             call.answer(this.state.stream); // Answer the call with an A/V stream.
             call.on('stream', (remoteStream) => {
                this.updatePeer({username: call.peer, stream: remoteStream})
             });
         });
+        socket.on("mute",this.mute)
         peer.on('connection', (conn)=> {
             console.log("Connection recieved")
             conn.on('data', (data)=>{
@@ -98,9 +97,6 @@ class VideoChatPage extends Component {
         var {peers} = this.state
         var oldPeer = peers.find(p => p.username == peer.username)
         var index = peers.indexOf(oldPeer);
-        console.log(peer)
-        console.log(peers)
-        console.log(index)
         if (index !== -1) {
             peers[index].stream = peer.stream
             this.setState({peers})
@@ -157,8 +153,15 @@ class VideoChatPage extends Component {
        audio.enabled=!audio.enabled
        this.setState({audio})
     }
-    muteUSer=(id)=>{
-        alert(id)
+    muteUser=(id)=>{
+        var{socket,roomname}=this.state
+        socket.emit("mute",id,roomname);
+    }
+    mute= () => {
+       var {audio}=this.state
+       audio.enabled=false
+       console.log("muted")
+       this.setState({audio})
     }
 
     render() {
@@ -173,10 +176,9 @@ class VideoChatPage extends Component {
                 return true;
             }
         })
-        console.log('====================================');
+
         console.log(this.state);
-        console.log(activePeers);
-        console.log('====================================');
+
         return (
             <div className="room-layout">
                 <div
@@ -200,7 +202,7 @@ class VideoChatPage extends Component {
                 <div className="side-bar" style={this.state.chatOpen?null:{width:0}}>
                    
 
-                   <UserList users={peers.concat(this.state)} onClick={this.muteUSer}/>
+                   <UserList users={peers.concat({stream,username})} onClick={this.muteUser}/>
                     <Divider/>
                    
                     <ChatWindow messages={this.state.messages} sendMessage={this.sendMessage}/> 

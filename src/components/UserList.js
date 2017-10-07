@@ -1,5 +1,5 @@
 import React from 'react';
-import {List, Icon, Header} from 'semantic-ui-react'
+import {List, Icon, Header,Button} from 'semantic-ui-react'
 const UserList = ({users, onClick}) => {
     console.log(users)
     return (
@@ -10,8 +10,10 @@ const UserList = ({users, onClick}) => {
                 <List verticalAlign='middle'>
                     {users.map((user,i) => <List.Item key={i}>
                         <List.Content floated='right'>
-                            <Icon size="large" name='microphone' color="red"/>
+                          {/*   <Icon size="large" name='microphone' color="red"/> */}
+                            <Button size="small" circular icon='microphone' color="red" onClick={()=>onClick(user.username)} />
                         </List.Content>
+                        
                         <Icon name="user circle" size="large"  />
                         <List.Content verticalAlign='middle'>
                             <List.Header
@@ -21,6 +23,7 @@ const UserList = ({users, onClick}) => {
                             }}>
                                {user.username}
                             </List.Header>
+                            
                         </List.Content>
 
                     </List.Item>)}

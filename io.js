@@ -22,6 +22,12 @@ module.exports = (server) => {
            }
            
         })
+        socket.on("mute",(id,roomname)=>{
+            var user= map.get(roomname).find(u=>u.username==id)
+            if(user){
+                io.to(user.sid).emit("mute")
+            }
+        })
         socket.on("join", ({roomname,username}) => {
 
             var room = []
