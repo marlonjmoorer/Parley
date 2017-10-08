@@ -1,19 +1,23 @@
-
 import React from 'react';
+import Analyser from './Analyser';
+
 const UserStream = ({stream}) => {
-    var url=""
+    var url = ""
     if (stream) {
-       
-        url=URL.createObjectURL(stream)
+
+        url = URL.createObjectURL(stream)
     }
+
     console.log(url)
     return (
-        <div style={{display:"grid",alignItems:"end",justifyContent:"center"}}>
-        <video  className="user-video"
-        src={url}
-        autoPlay></video>
+        <div className="userStream">
+            <div>
+                <video className="user-video" src={url} muted autoPlay></video>
+
+                <Analyser stream={stream}/>
+            </div>
         </div>
-    
+
     );
 }
 

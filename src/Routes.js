@@ -4,7 +4,6 @@ import {
     Route
 } from 'react-router-dom'
 import Home from './pages/Home';
-import Room from './components/Room';
 import VideoChat from './pages/VideoChat';
 
 

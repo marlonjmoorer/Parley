@@ -27,7 +27,10 @@ class VideoArea extends Component {
         return (
             <div className="video-area">
                 <VideoGrid peers={this.props.peers}/>
-                <UserStream stream={this.props.user.stream}/>
+                 {this.props.user.stream&&
+                  <UserStream stream={this.props.user.stream}/>
+                 }
+                
             </div>
             
         );
