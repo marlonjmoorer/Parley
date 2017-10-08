@@ -38,7 +38,7 @@ export class Anaylser extends Component {
             var x = 0;
             for (var i = 0; i < bufferLength; i++) {
 
-                var v = dataArray[i] / 128.0;
+                var v = (dataArray[i]+1) / 128.0;
                 var y = v * height / 2;
 
                 if (i === 0) {
