@@ -44,7 +44,7 @@ class Home extends Component {
                             <Header as='h2' icon textAlign='center'>
                                 <Icon name='users' circular color="teal" inverted/>
                                 <Header.Content>
-                                    Chat
+                                   Parley
                                 </Header.Content>
                             </Header>
                             <Form.Field >
