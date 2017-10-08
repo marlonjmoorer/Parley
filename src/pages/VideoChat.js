@@ -11,7 +11,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import UserNameForm from '../components/UserNameForm';
 
 var UsernameGenerator = require('username-generator');
-const { peerOptions } = require('../config');
+const { peerOptions,socketUrl } = require('../config');
 
 
 class VideoChatPage extends Component {
@@ -19,10 +19,10 @@ class VideoChatPage extends Component {
         id: null,
         peers: [],
         stream: null,
-        socket: io.connect(`/`),
+        socket: io.connect(socketUrl),
         messages:[],
         chatOpen:true,
-        username:UsernameGenerator.generateUsername(),
+        username:UsernameGenerator.generateUsername().slice(0,16),
         joining:false
       //  audioContext: new AudioContext()
     }

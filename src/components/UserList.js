@@ -7,18 +7,19 @@ const UserList = ({users, onClick,audioContext}) => {
     console.log(users)
     return (
        <div className="userList-container">
-           <Header color="blue" inverted >Conversation</Header>
+           <Header color="blue" inverted >Users</Header>
            <div className="userList">
                  
                 <List verticalAlign='middle'>
                     {users.map((user,i) => <List.Item key={i}>
                         <List.Content floated='right'>
                           {/*   <Icon size="large" name='microphone' color="red"/> */}
-                            <Button size="small" circular icon='microphone' color="red" onClick={()=>onClick(user.username)} />
+                            <Button size="tiny" circular icon='microphone' color="red" onClick={()=>onClick(user.username)} />
                         </List.Content>
                         
-                        <Icon name="user circle" size="large"  />
+                        
                         <List.Content verticalAlign='middle'>
+                            
                             <List.Header
                                 as='a'
                                 style={{

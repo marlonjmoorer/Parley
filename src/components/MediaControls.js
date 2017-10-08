@@ -5,9 +5,8 @@ const MediaControls = ({toggleChat, video,audio,toggleCam,toggleMic}) => {
     return (
 
      <Segment  vertical textAlign='center' inverted color="blue" >
-        <Button size="huge" circular icon={audio.enabled?'unmute':"mute"} onClick={toggleMic} />
-        <Button size="huge" color={video.enabled?"red":""} circular icon='video camera' onClick={toggleCam} />
-        <Button size="huge" circular icon='settings'/>
+        <Button size="huge" color={audio.enabled?"red":null}  circular icon={audio.enabled?'unmute':"mute"} onClick={toggleMic} />
+        <Button size="huge" color={video.enabled?"red":null} circular icon='video camera' onClick={toggleCam} />
         <Button size="huge" circular icon='talk' onClick={toggleChat}/>
      </Segment>
 
