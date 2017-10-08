@@ -1,10 +1,12 @@
 import React from 'react';
 import {Item, Icon,Comment,Message} from 'semantic-ui-react'
 const MessageFeed = ({messages}) => {
-
-   
+    var messageFeed=null;
+    const autoScroll=()=>{
+      messageFeed.scrollTop = messageFeed.scrollHeight
+    }
     return (
-        <div id="feed" className="messages">
+        <div id="feed" onLoad={autoScroll} ref={(feed)=>messageFeed=feed }className="messages">
         <Comment.Group >
        {messages.map((message,i)=>
         <Comment key={i}>

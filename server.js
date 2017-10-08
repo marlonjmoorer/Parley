@@ -3,7 +3,7 @@ var app =express();
 var parser= require("body-parser")
 var ExpressPeerServer = require('peer').ExpressPeerServer;
 var path=  require('path')
-var port=process.env.PORT||5000
+var port=process.env.PORT||5500
 
 app.use(parser.urlencoded({extended:true}))
 app.use(parser.json())

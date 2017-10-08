@@ -1,43 +1,4 @@
-/*import React from 'react'
 
- const Anaylser = ({stream}) => {
-
-    console.log(stream)
-    var canvas,analyser, ctx
-    var init=()=>{
-        console.log(stream)
-        canvas= document.querySelector('canvas')
-        ctx= canvas.getContext('2d')
-        var context= new AudioContext()     
-        analyser= context.createAnalyser()
-        var source=context.createMediaStreamSource(stream)
-        source.connect(analyser)
-       // analyser.connect(context.destination)
-        looper()
-    }
-
-    var looper=()=>{
-        window.requestAnimationFrame(looper)
-        var fbc_array= new Uint8Array(analyser.frequencyBinCount)
-        analyser.getByteFrequencyData(fbc_array)
-        ctx.clearRect(0,0,canvas.width,canvas.height)
-        ctx.fillStyle='#00CCFF'
-        var barz=150,x,width, height
-        for (var i = 0; i < barz; i++) {
-            x=i*3;
-            width=7
-            height= -(fbc_array[i]/1.1)
-            ctx.fillRect(x,canvas.height,width,height)   
-        }
-    }
-
-    
-  return (
-    <canvas o ={()=>alert("")} style={{ backgroundColor:"grey" }}></canvas> 
-  )
-}
-
-export default Anaylser */
 
 import React, { Component } from 'react'
 
@@ -52,46 +13,68 @@ export class Anaylser extends Component {
         }
     }
    
+
    
-    
-    
-    init=()=>{
-        
-      
-    }
-
-    looper=()=>{
-
+    visualize(stream) {
         var {canvas,analyser,ctx}=this.state
-        window.requestAnimationFrame(this.looper)
-        var fbc_array= new Uint8Array(analyser.frequencyBinCount)
-        analyser.getByteFrequencyData(fbc_array)
-        ctx.clearRect(0,0,canvas.width,canvas.height)
-        ctx.fillStyle='#00CCFF'
-        var barz=150,x,width, height
-        for (var i = 0; i < barz; i++) {
-            x=i*3;
-            width=7
-            height= -(fbc_array[i]/1.1)
-            ctx.fillRect(x,canvas.height,width,height)   
+        var { width, height } = canvas
+        
+        analyser.fftSize = 2048;
+        var bufferLength = analyser.frequencyBinCount; // half the FFT value
+        var dataArray = new Uint8Array(bufferLength);
+        ctx.clearRect(0, 0, width, height)
+        function draw() {
+
+            requestAnimationFrame(draw);
+            analyser.getByteTimeDomainData(dataArray);
+            ctx.fillStyle = 'black'
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#2185d0';
+
+            ctx.beginPath();
+            var sliceWidth = width * 1.0 / bufferLength;
+            var x = 0;
+            for (var i = 0; i < bufferLength; i++) {
+
+                var v = dataArray[i] / 128.0;
+                var y = v * height / 2;
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            ctx.lineTo(width, height / 2);
+            ctx.stroke();
         }
+        draw();
+       
+
     }
+    
 
     componentDidMount() {
          var {stream}= this.props
-         var canvas= document.querySelector('canvas')
+         console.log(this.props)
+         var canvas=  this.canvas
          var ctx= canvas.getContext('2d')
-         var context= new AudioContext()      
+         var context= new AudioContext    
          var analyser= context.createAnalyser()
          var source=context.createMediaStreamSource(stream)
          source.connect(analyser)
-         this.setState({canvas,analyser,ctx},this.looper)
+         this.setState({canvas,analyser,ctx},this.visualize)
         
     }
   render() {
    
     return (
-        <canvas  style={{ backgroundColor:"grey" }}></canvas> 
+        <canvas ref={(canv)=>this.canvas=canv}  style={{ backgroundColor:"black" }}></canvas> 
     )
   }
 }

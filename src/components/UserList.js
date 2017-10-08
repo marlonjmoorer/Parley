@@ -1,6 +1,9 @@
 import React from 'react';
 import {List, Icon, Header,Button} from 'semantic-ui-react'
-const UserList = ({users, onClick}) => {
+
+
+
+const UserList = ({users, onClick,audioContext}) => {
     console.log(users)
     return (
        <div className="userList-container">
@@ -23,7 +26,7 @@ const UserList = ({users, onClick}) => {
                             }}>
                                {user.username}
                             </List.Header>
-                            
+                           
                         </List.Content>
 
                     </List.Item>)}

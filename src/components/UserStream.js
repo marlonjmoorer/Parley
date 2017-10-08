@@ -14,7 +14,7 @@ const UserStream = ({stream}) => {
             <div>
                 <video className="user-video" src={url} muted autoPlay></video>
 
-                <Analyser stream={stream}/>
+                <Analyser stream={stream} />
             </div>
         </div>
 
