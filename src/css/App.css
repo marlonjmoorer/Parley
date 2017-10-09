@@ -131,11 +131,18 @@ video,canvas {
   margin-bottom: 5px;
 }
 
-#message-input{
+#message-input, .home form{
   border: solid #3498db;
 
 }
-.loading-container{
+
+.home form{
+  padding:15px 10px;
+  border-radius: 8px;
+}
+
+
+.loading-container,.home{
   background: black;
   width: 100%;
   height: 100%;

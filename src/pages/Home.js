@@ -31,28 +31,24 @@ class Home extends Component {
             return <Redirect to={`room/${this.state.room}`}/>
         }
         return (
-            <div
-                style={{
-                margin: "160px auto",
-                textAlign: "center",
-            }}>
-                <Container textAlign="center" >
+            <div className="home">
+                <Container textAlign="center"  >
 
                     <Grid centered >
                         
                         <Form onSubmit={this.handleSubmit}>
-                            <Header as='h2' icon textAlign='center'>
-                                <Icon name='users' circular color="teal" inverted/>
-                                <Header.Content>
+                            <Header as='h2' inverted icon textAlign='center'>
+                                <Icon name='users' circular color="blue" inverted/>
+                                <Header.Content >
                                    Parley
                                 </Header.Content>
                             </Header>
                             <Form.Field >
                                 <Input  
                                     onChange={(e)=>{this.setState({room:e.target.value})}}
-                                    action={{color:"teal",content:"Start" ,type:"submit" }} 
+                                    action={{color:"blue",content:"Start" ,type:"submit" }} 
                                     placeholder="Choose a room name" 
-                                    label={{ color:"teal", content: 'Ramble /' }}/>
+                                    label={{ color:"blue", content: 'Parley /' }}/>
                             </Form.Field>
                         </Form>
                         
