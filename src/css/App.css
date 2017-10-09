@@ -131,7 +131,7 @@ video,canvas {
   margin-bottom: 5px;
 }
 
-#message-input, .home form{
+#message-input{
   border: solid #3498db;
 
 }
